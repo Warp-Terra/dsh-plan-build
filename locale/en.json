@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Plan / Build Mode",
+    "description": "Shows the current Plan or Build mode in the composer and switches it with Tab."
+  }
+}
