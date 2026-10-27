@@ -46,6 +46,14 @@ dsh plugin install /absolute/path/to/dsh-plan-build-mode
 - <kbd>Tab</kbd> 是一个固定快捷键行（`ctx.shortcuts.registerFixed`），通过 `ctx.shortcuts.observeFixedInput` 观察；只有在输入框编辑区内才消费事件，其余位置照常移动焦点。
 - Host 半边注册一个 `ctx.tools.guard`：agent 的计划模式激活时拒绝 `write` 与 `edit`，并给出指明下一步的理由；其它调用原样放行。
 
+## 语言
+
+胶囊上的每一处可见文案 —— 文字、`aria-label`、悬停提示、失败提示 —— 都经由客户端本地化服务，因此控件跟随的是**界面语言**（Settings → General → Language），而不是操作系统语言或对话语言。harness 内建 `zh` 与 `en`，`zh` 声明回落到 `en`；查找会先走本命名空间里的这条链路，取不到才会把原始 key 显示出来。切换语言后胶囊在下次渲染即更新，无需刷新页面，也无需重装插件。
+
+通过 `addLanguage` 注册的第三方语言包在这里会回落到英文，因为我们只提供 `zh` 与 `en` 两套字典。
+
+guard 的拒绝理由**有意不翻译**：它是模型可见内容，而 harness 的系统提示词是英文。
+
 ## 强制约束
 
 Harness 的计划模式只靠提示词约束模型，所以一份"待审批"的方案，可能是在模型已经改过文件之后才到的。守卫让这个阶段变成真的：

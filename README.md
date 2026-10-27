@@ -46,6 +46,14 @@ or, inside a Harness session, ask the agent to `install_bundle` this directory. 
 - <kbd>Tab</kbd> is a fixed shortcut row (`ctx.shortcuts.registerFixed`) observed through `ctx.shortcuts.observeFixedInput`; the event is consumed only inside the composer editor, so the key still moves focus everywhere else.
 - Host half registers one `ctx.tools.guard`. While an agent's plan mode is active it denies `write` and `edit` with a reason that names the legal next step; everything else passes untouched.
 
+## Localization
+
+Every visible string on the chip — label, `aria-label`, tooltip, failure note — goes through the client locale service, so the control follows the **interface language** (Settings → General → Language) rather than the operating system or the conversation's language. The harness ships `zh` and `en`; `zh` declares `en` as its fallback, and lookup walks that chain inside this plugin's namespace before it ever shows a raw key. Switching language updates the chip on the next render — no page reload, no reinstall.
+
+A third-party language pack registered through `addLanguage` falls back to English here, because only the `zh` and `en` dictionaries exist.
+
+The guard's rejection reason is deliberately **not** localized: it is model-facing text, and the harness system prompt is English.
+
 ## Enforcement
 
 Harness plan mode restrains the model through prompt text only, so a plan could arrive "for approval" after the model had already edited files. The guard makes the phase real:
