@@ -39,6 +39,20 @@ dsh plugin install /absolute/path/to/dsh-plan-build-mode
 
 or, inside a Harness session, ask the agent to `install_bundle` this directory. The bundle inserts one row `plan-build-mode`; no harness files are modified.
 
+## Default mode
+
+New sessions start in Build mode. Set `defaultMode: plan` on the bundle row to start them in Plan mode instead:
+
+```yaml
+- id: plan-build-mode
+  config:
+    defaultMode: plan
+```
+
+Only **new** sessions are affected. A resumed session keeps the mode recorded in its log, and subagents always start writable — a plan-mode parent must still be able to delegate exploration.
+
+Weigh it before flipping: this plugin makes plan mode genuinely read-only, so `plan` means every fresh session cannot edit a file until you approve a plan or press <kbd>Tab</kbd>. That suits a workflow that almost always plans first, and is pure friction for a one-line fix. For reference, Claude Code starts sessions in auto mode rather than plan mode, and OpenCode starts on its Build agent.
+
 ## How it works
 
 - Client half registers into the `conversation.input.left` list seat (declared by `ui-conversation`, empty by default, `replaceRisk: none`).

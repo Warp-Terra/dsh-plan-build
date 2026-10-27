@@ -1,3 +1,7 @@
 - insert:
     - id: plan-build-mode
       name: dsh-plan-build-mode
+      # build (default) | plan — see README "Default mode". Only new sessions are
+      # affected; resumed sessions and subagents keep their own state.
+      config:
+        defaultMode: build

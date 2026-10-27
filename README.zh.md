@@ -39,6 +39,20 @@ dsh plugin install /absolute/path/to/dsh-plan-build-mode
 
 或者在 Harness 会话里让 agent 对本目录执行 `install_bundle`。插件只插入一行 `plan-build-mode`，不修改任何 harness 文件。
 
+## 默认模式
+
+新会话默认以构建模式开始。把 `defaultMode` 设为 `plan`，即可让新会话直接以计划模式开始：
+
+```yaml
+- id: plan-build-mode
+  config:
+    defaultMode: plan
+```
+
+只有**新建**会话受影响。恢复的会话沿用日志里记录的模式；子代理始终以可写状态启动 —— 处于计划模式的父 agent 仍然要能派子代理去做探索。
+
+改之前请先权衡：本插件让计划模式真正只读，所以设成 `plan` 意味着每个新会话在批准计划或按 <kbd>Tab</kbd> 之前都改不了文件。这适合"几乎总是先规划"的工作流，对改一行代码这种事则纯属摩擦。可参考同类工具的默认值 —— Claude Code 以 auto 模式起步而非计划模式，OpenCode 默认停在 Build agent。
+
 ## 实现方式
 
 - 客户端半边注册进 `conversation.input.left` 列表槽位（由 `ui-conversation` 声明，默认无占用，`replaceRisk: none`）。

@@ -13,6 +13,9 @@
 /** Tools denied while plan mode is active: OpenCode's `edit` permission action. */
 const BLOCKED_TOOLS = new Set(['write', 'edit'])
 
+/** Mode a fresh session starts in when the row config says nothing. */
+const DEFAULT_MODE = 'build'
+
 /**
  * Build the rejection reason the model sees.
  * @param tool - the blocked tool name.
@@ -25,10 +28,12 @@ function denial(tool) {
 export const inject = ['tools', 'agents', 'agentPresets']
 
 /**
- * Register the plan-mode guard.
+ * Register the plan-mode guard and the optional plan-first default.
  * @param ctx - plugin root context.
+ * @param config - the row config; `defaultMode` is `build` (default) or `plan`.
  */
-export function apply(ctx) {
+export function apply(ctx, config) {
+  const defaultMode = config?.defaultMode === 'plan' ? 'plan' : DEFAULT_MODE
   /** agent -> planMode service, or null once resolution was proven empty. */
   const resolved = new WeakMap()
   /** Agents already warned about, so a resolution failure is not silent. */
@@ -90,5 +95,28 @@ export function apply(ctx) {
         }
       }),
     'plan-build-mode: plan guard',
+  )
+
+  ctx.effect(
+    () =>
+      ctx.on('agent/created', ({ agent, source }) => {
+        // A throwing listener fails agent creation, so nothing here may escape.
+        try {
+          if (defaultMode !== 'plan') return
+          // Resume, clear, and compaction keep the logged stance: only a brand-new
+          // session is the plugin's to choose.
+          if (source !== 'startup') return
+          // A child agent inherits nothing and must stay writable; only the root of
+          // a request chain gets the default.
+          if (ctx.agents.currentInitiator() !== undefined) return
+          const planMode = planModeOf(agent)
+          if (planMode === null) return
+          if (planMode.get(agent).active) return
+          planMode.set(agent, true)
+        } catch {
+          // The default is a convenience, never a reason to fail a session.
+        }
+      }),
+    'plan-build-mode: default mode',
   )
 }
