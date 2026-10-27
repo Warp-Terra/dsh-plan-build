@@ -1,5 +1,7 @@
 # dsh-plan-build-mode
 
+English | [中文](README.zh.md)
+
 Always-visible **Build** control in the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web composer, plus <kbd>Tab</kbd> to switch between Build and Plan mode — the affordance OpenCode provides, for a harness whose plan mode otherwise has no inactive control — and a tool guard that makes plan mode genuinely read-only instead of merely advising.
 
 ## Why
@@ -60,7 +62,6 @@ ctx.tools.guard((exec) => {
 The tool set matches OpenCode's `permissions: deny edit *` — its `write`/`edit`/`patch` tools. Plan state is read live through the agent's retained preset composition (`agentPresets.serviceFor(agent, 'planMode')`, falling back to `agent.ctx.get('planMode')`), so leaving plan mode restores writes immediately with no restart and no re-registration.
 
 A guard that throws would fail the whole tool pipeline, so every resolution step is wrapped: an agent whose plan mode cannot be resolved is allowed through and warned about once, rather than blocked or crashed.
-
 
 ## Limitations
 
