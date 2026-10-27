@@ -72,7 +72,7 @@ window.__ModuleLoader__.load({
     function ModeChip({ useProjection, applyPlanMode, syncPlanState, t }) {
       const plan = useProjection('plan')
       const effective = plan == null ? undefined : plan.pending ? !plan.active : plan.active
-      const label = typeof t === 'function' ? t : (key) => key
+      const label = typeof t === 'function' ? t : (key) => en[key] ?? key
       const [busy, setBusy] = React.useState(false)
       const [error, setError] = React.useState(null)
       const alive = React.useRef(true)
